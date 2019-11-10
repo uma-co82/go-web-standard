@@ -80,6 +80,11 @@ func setCookie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Set-Cookie", c2.String())
 }
 
+func getCookie(w http.ResponseWriter, r *http.Request) {
+	h := r.Header["Cookie"]
+	fmt.Fprintln(w, h)
+}
+
 func main() {
 
 	server := http.Server{
@@ -94,6 +99,7 @@ func main() {
 	http.HandleFunc("/redirect", headerExample)
 	http.HandleFunc("/json", jsonExample)
 	http.HandleFunc("/set_cookie", setCookie)
+	http.HandleFunc("/get_cookie", getCookie)
 
 	server.ListenAndServe()
 }
