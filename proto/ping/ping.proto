@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package ping;
+
+service Ping {
+  rpc Hello (HelloRequest) returns (HelloResponse) {
+  }
+}
+
+message HelloRequest {
+  string toMessage = 1;
+}
+
+message HelloResponse {
+  string resMessage = 1;
+}
