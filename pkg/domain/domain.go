@@ -1,0 +1,3 @@
+package domain
+
+// ドメイン層

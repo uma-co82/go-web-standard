@@ -1,0 +1,3 @@
+package usecase
+
+// ユースケース層
