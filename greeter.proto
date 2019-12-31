@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package hello;
+
+// Greeterと言うサービスを定義
+service Greeter {
+  // SayHelloと言う呼び出し(RPC)を定義
+  // 呼び出しにはクライアント側から送るパラメータHelloRequestがある
+  // 返信としてHelloReplyがある
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
