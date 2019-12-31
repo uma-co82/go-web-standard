@@ -6,7 +6,10 @@ import (
 	"os"
 	"time"
 
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 
 	"google.golang.org/grpc"
 
@@ -35,7 +38,22 @@ func main() {
 	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name}, grpc.Trailer(&md))
 
 	if err != nil {
-		log.Fatalf("could not greeter: %v", err)
+		// FromErrorを呼び出す事でgRPCのStatusに変換
+		s, ok := status.FromError(err)
+		if ok {
+			log.Printf("gRPC Error (message: %s)", s.Message())
+			// エラーの詳細情報のスライス
+			for _, d := range s.Details() {
+				// エラーの型にキャストする事でcaseで個別にハンドリングできる
+				switch info := d.(type) {
+				case *errdetails.RetryInfo:
+					log.Printf("RetryInfo: %v", info)
+				}
+			}
+			os.Exit(1)
+		} else {
+			log.Fatalf("could not greeter: %v", err)
+		}
 	}
 	log.Printf("Greeting: %s", r.Message)
 }
