@@ -4,6 +4,9 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
+
+	"google.golang.org/grpc/metadata"
 
 	"google.golang.org/grpc"
 
@@ -23,8 +26,14 @@ func main() {
 
 	name := os.Args[1]
 
+	md := metadata.Pairs("timestamp", time.Now().Format(time.Stamp))
+
 	ctx := context.Background()
-	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
+
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name}, grpc.Trailer(&md))
+
 	if err != nil {
 		log.Fatalf("could not greeter: %v", err)
 	}
