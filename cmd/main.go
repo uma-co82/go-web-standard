@@ -8,7 +8,6 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 
 	pb "github.com/uma-co82/go-web-standard"
 )
@@ -34,16 +33,17 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 // }
 
 func main() {
-	addr := ":50052"
+	addr := ":50051"
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	cred, err := credentials.NewServerTLSFromFile("server.crt", "private.key")
-	if err != nil {
-		log.Fatal(err)
-	}
-	s := grpc.NewServer(grpc.Creds(cred))
+	// TLS
+	// cred, err := credentials.NewServerTLSFromFile("server.crt", "private.key")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	s := grpc.NewServer()
 	pb.RegisterGreeterServer(s, &server{})
 
 	log.Printf("gRPC server listening on " + addr)
