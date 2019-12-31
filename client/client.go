@@ -20,6 +20,7 @@ import (
 
 func main() {
 	addr := "localhost:50051"
+	// grpc.WithInsecure()は認証しない時
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
