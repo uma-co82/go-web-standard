@@ -31,8 +31,20 @@ func main() {
 
 	md := metadata.Pairs("timestamp", time.Now().Format(time.Stamp))
 
-	ctx := context.Background()
+	// キャンセルやタイムアウトを考慮せず、ずっと待ち続ける
+	// ctx := context.Background()
+	// キャンセル考慮
+	ctx, cancel := context.WithCancel(context.Background())
+	// キャンセル実行
+	defer cancel()
 
+	// 1秒後にキャンセル実行
+	go func() {
+		time.Sleep(1 * time.Second)
+		cancel()
+	}()
+
+	// metadataをheaderにつめる
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name}, grpc.Trailer(&md))
