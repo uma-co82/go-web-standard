@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
@@ -20,8 +20,13 @@ import (
 
 func main() {
 	addr := "localhost:50051"
+	creds, err := credentials.NewClientTLSFromFile("server.crt", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
 	// grpc.WithInsecure()は認証しない時
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	// conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -40,10 +45,10 @@ func main() {
 	defer cancel()
 
 	// 1秒後にキャンセル実行
-	go func() {
-		time.Sleep(1 * time.Second)
-		cancel()
-	}()
+	// go func() {
+	// 	time.Sleep(1 * time.Second)
+	// 	cancel()
+	// }()
 
 	// metadataをheaderにつめる
 	ctx = metadata.NewOutgoingContext(ctx, md)

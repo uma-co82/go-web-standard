@@ -6,9 +6,9 @@ import (
 	"context"
 	"log"
 	"net"
-	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	pb "github.com/uma-co82/go-web-standard"
 )
@@ -18,7 +18,6 @@ type server struct{}
 // 正常系
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.Name)
-	time.Sleep(3 * time.Second)
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
@@ -40,7 +39,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+	cred, err := credentials.NewServerTLSFromFile("server.crt", "private.key")
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := grpc.NewServer(grpc.Creds(cred))
 	pb.RegisterGreeterServer(s, &server{})
 
 	log.Printf("gRPC server listening on " + addr)
