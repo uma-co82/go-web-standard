@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds), grpc.WithUnaryInterceptor(unaryInterceptor))
 	// grpc.WithInsecure()は認証しない時
 	// conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
@@ -74,4 +74,11 @@ func main() {
 		}
 	}
 	log.Printf("Greeting: %s", r.Message)
+}
+
+func unaryInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	log.Printf("before call: %s, request: %+v", method, req)
+	err := invoker(ctx, method, req, reply, cc, opts...)
+	log.Printf("after call: %s, response: %+v", method, reply)
+	return err
 }
